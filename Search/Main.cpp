@@ -1,5 +1,7 @@
 #include "Node.h"
 #include <iostream>
+#include <stack>
+#include <queue>
 #include <list>
 
 using char_node_t = node<char>;
@@ -11,16 +13,16 @@ vector<char_node_t*> getDFS(char_node_t* root, char target)
 	if (root == nullptr) return vector<char_node_t*>();
 
 	// create nodes stack and push root onto stack
-	vector<char_node_t*> node_stack;
+	stack<char_node_t*> node_stack;
 	//<set root visited to true>
 	root->visited = true;
 	//<push root onto node_stack>
-	node_stack.push_back(root);
+	node_stack.push(root);
 
 	while (!node_stack.empty())
 	{
 		// get current node from the top of stack
-		char_node_t* current = node_stack.back();
+		char_node_t* current = node_stack.top();
 		// check if the current node data is target value
 		if (current->data == target)
 		{
@@ -42,7 +44,7 @@ vector<char_node_t*> getDFS(char_node_t* root, char target)
 			if (!child->visited)
 			{
 				child->visited = true;
-				node_stack.push_back(child);
+				node_stack.push(child);
 				popNode = false;
 				break;
 			}
@@ -50,7 +52,7 @@ vector<char_node_t*> getDFS(char_node_t* root, char target)
 		// if no unvisited children of the current node then pop the stack to go back up the tree
 		if (popNode)
 		{
-			node_stack.pop_back();
+			node_stack.pop();
 		}
 	}
 
@@ -61,8 +63,8 @@ vector<char_node_t*> getDFS(char_node_t* root, char target)
 	while (!node_stack.empty())
 	{
 		// add top node and then pop node off of stack
-		path.insert(path.begin(), node_stack.back());
-		node_stack.pop_back();
+		path.insert(path.begin(), node_stack.top());
+		node_stack.pop();
 	}
 
 	return path;
@@ -74,9 +76,9 @@ vector<char_node_t*> getBFS(char_node_t* root, char target)
 	if (root == nullptr) return vector<char_node_t*>();
 
 	// create nodes queue and queue root onto stack
-	list<char_node_t*> node_queue;
+	queue<char_node_t*> node_queue;
 	root->visited = true;
-	node_queue.push_back(root);
+	node_queue.push(root);
 
 	while (!node_queue.empty())
 	{
@@ -100,12 +102,12 @@ vector<char_node_t*> getBFS(char_node_t* root, char target)
 			{
 				child->visited = true;
 				child->parent = current;
-				node_queue.push_back(child);
+				node_queue.push(child);
 			}
 		}
 
 		// pop the front of the queue
-		node_queue.pop_front();
+		node_queue.pop();
 	}
 
 	// convert nodes to vector of nodes (path)
@@ -145,8 +147,8 @@ int main()
 	nodeC->children.push_back(nodeF); // C->F
 
 	// get search path to 'F' from node 'A'
-	//auto path = getDFS(nodeA, 'F');
-	auto path = getBFS(nodeA, 'F');
+	auto path = getDFS(nodeA, 'F');
+	//auto path = getBFS(nodeA, 'F');
 	// display path result
 	cout << "path: ";
 	for (auto& node : path)
